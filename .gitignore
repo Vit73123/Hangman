@@ -9,3 +9,5 @@ _Temp
 /src/_tmp/
 /lib/
 /.patches
+/.idea/
+*.drawio.bkp
