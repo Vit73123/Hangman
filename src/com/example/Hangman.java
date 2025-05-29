@@ -3,10 +3,7 @@ package com.example;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class Hangman {
 
@@ -37,8 +34,7 @@ public class Hangman {
 
     public Hangman() {
         words = loadWords();
-//        word = new Word(words.get(new Random().nextInt(words.size())));
-        word = new Word("галлюцинация");
+        word = new Word(words.get(new Random().nextInt(words.size())));
     }
 
     // Прорисовка виселицы
@@ -77,7 +73,7 @@ public class Hangman {
     }
 
     private static boolean isNo(String answer) {
-        if (answer.isEmpty()) return true;
+        if (answer.isEmpty()) return false;
         return answer.equalsIgnoreCase(NO_STRING) ||
                 NO_CHAR == Character.toLowerCase(answer.charAt(0));
     }
@@ -114,10 +110,10 @@ public class Hangman {
         System.out.println("Было загадано слово: " + word);
     }
 
-    public static void testMain(String[] args) {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String answer = "";
-        while (isNo(answer)) {
+        while (!isNo(answer)) {
             if (isYes(answer)) {
                 game = new Hangman();
                 game.start();
@@ -125,12 +121,6 @@ public class Hangman {
             System.out.print("Хотите начать новую игру [yes/no]? ");
             answer = scanner.nextLine();
         }
-    }
-
-    public static void main(String[] args) {
-//        testMain(args);
-        game = new Hangman();
-        game.start();
     }
 }
 

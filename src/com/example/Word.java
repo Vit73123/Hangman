@@ -59,12 +59,6 @@ public class Word {
         return true;
     }
 
-    public static void main(String[] args) {
-        String word = "кооперация";
-        Map<Character, List<Integer>> letters = toLettersIndexes(word);
-        System.out.println(letters);
-    }
-
     @Override
     public String toString() {
         return string;
