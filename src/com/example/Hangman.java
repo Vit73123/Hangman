@@ -1,22 +1,23 @@
 package com.example;
 
-import java.io.BufferedReader;
+import com.example.exception.DictionaryEmptyExeption;
+import com.example.exception.DictionaryNotFoundException;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
 public class Hangman {
 
-    private static final String DATA_FILE = "data.txt";
-    private final List<String> words;
-
-    public static Hangman game;
-    private final Word word;
+    private static final String DATA_FILE = "resources/data.txt";
 
     private static final String YES_STRING = "yes";
-    private static final char YES_CHAR = 'y';
+    private static final String YES_CHAR = "y";
     private static final String NO_STRING = "no";
-    private static final char NO_CHAR = 'n';
+    private static final String NO_CHAR = "n";
 
 
     private static final int MAX_ERROR = 6;
@@ -30,11 +31,23 @@ public class Hangman {
     private static final String ERROR_5 = "|   /";
     private static final String ERROR_6 = "|   / \\";
 
+    public static Hangman game;
+
+    private final List<String> dictionary;
+    private final Word word;
+
     private int error;
 
     public Hangman() {
-        words = loadWords();
-        word = new Word(words.get(new Random().nextInt(words.size())));
+        dictionary = loadWords();
+        if (dictionary.isEmpty()) {
+            throw new DictionaryEmptyExeption(
+                    String.format("В словаре нет слов. Наполните словарь в файле %s", DATA_FILE));
+        }
+
+        Random random = new Random();
+        int index = random.nextInt(dictionary.size());
+        word = new Word(dictionary.get(index));
     }
 
     // Прорисовка виселицы
@@ -54,28 +67,27 @@ public class Hangman {
 
     // Загрузить список слов из файла данных в resources
     private List<String> loadWords() {
-        List<String> words = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream("/" + DATA_FILE))))) {
-            while (reader.ready()) {
-                words.add(reader.readLine());
-            }
+        if (!Files.exists(Path.of(DATA_FILE))) {
+            throw new DictionaryNotFoundException(
+                    String.format("Отсутствует файл словаря слов. Проверьте наличие файла %s", DATA_FILE));
+        }
+        List<String> dictionary;
+        try {
+            dictionary = Files.readAllLines(Path.of(DATA_FILE));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return words;
+        return dictionary;
     }
 
     private static boolean isYes(String answer) {
         if (answer.isEmpty()) return false;
-        return answer.equalsIgnoreCase(YES_STRING) ||
-                YES_CHAR == Character.toLowerCase(answer.charAt(0));
+        return answer.equalsIgnoreCase(YES_STRING) || answer.equalsIgnoreCase(YES_CHAR);
     }
 
     private static boolean isNo(String answer) {
         if (answer.isEmpty()) return false;
-        return answer.equalsIgnoreCase(NO_STRING) ||
-                NO_CHAR == Character.toLowerCase(answer.charAt(0));
+        return answer.equalsIgnoreCase(NO_STRING) || answer.equalsIgnoreCase(NO_CHAR);
     }
 
     private boolean isWin() {
@@ -116,7 +128,9 @@ public class Hangman {
         while (!isNo(answer)) {
             if (isYes(answer)) {
                 game = new Hangman();
-                game.start();
+                if (game.word != null) {
+                    game.start();
+                }
             }
             System.out.print("Хотите начать новую игру [yes/no]? ");
             answer = scanner.nextLine();
