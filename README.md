@@ -8,16 +8,16 @@ Java 17
 __Компиляция:__
 
 Перейти в корневой каталог проекта.  
-`cd hangman`
+`cd Hangman`
 
 Все команды выполняются из корневого каталога проекта.
 
 Скомпилировать проект:  
-`javac -d out ./src/com/example/*`
+`javac -d out -sourcepath src src/com/example/Hangman.java`
 
 __Запуск:__
 
-`java -classpath ./out com.example.Hangman`
+`java -classpath out com.example.Hangman`
 
 
 ## Техническое задание
